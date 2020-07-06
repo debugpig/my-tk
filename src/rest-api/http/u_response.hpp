@@ -5,10 +5,10 @@
 
 namespace uhttp {
 
+namespace http = boost::beast::http;
+
 template<typename Body>
 class Response {
-    using http = boost::beast::http;
-
 public:
     Response() = default;
 
