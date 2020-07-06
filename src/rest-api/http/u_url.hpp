@@ -47,7 +47,7 @@ public:
     }
 
 private:
-    Request request;
+    Request& request;
     std::string host;
     size_t port;
     std::string path;
