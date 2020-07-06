@@ -21,7 +21,7 @@ enum class Method {
 
 template<typename Request>
 class Header {
-    using http = boost::beast::http;
+    namespace http = boost::beast::http;
 
 public:
     Header(Request& req) : request{req} {
