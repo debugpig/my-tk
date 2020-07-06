@@ -6,10 +6,12 @@
 
 namespace uhttp {
 
+namespace http = boost::beast::http;
+    
 template<typename Request>
 class AuthorizationOption {
-    using http = boost::beast::http;
     using base64 = cppcodec::base32_rfc4648;
+    
 public:
     AuthorizationOption(std::string& name, std::string& password) {
         authorization = base64::encode(name+":"+password);
