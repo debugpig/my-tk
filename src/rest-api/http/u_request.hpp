@@ -8,10 +8,10 @@
 
 namespace uhttp {
 
+namespace http = boost::beast::http;
+
 template<typename Body>
 class Request {
-    namespace http = boost::beast::http;
-
 public:
     Request() = default;
 
