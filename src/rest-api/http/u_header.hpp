@@ -9,6 +9,9 @@
 
 namespace uhttp {
 
+// alias
+namespace http = boost::beast::http;
+
 enum class Version {
     HTTP_1_0,
     HTTP_1_1
@@ -21,8 +24,6 @@ enum class Method {
 
 template<typename Request>
 class Header {
-    namespace http = boost::beast::http;
-
 public:
     Header(Request& req) : request{req} {
     }
