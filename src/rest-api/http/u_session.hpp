@@ -16,13 +16,13 @@
 
 namespace uhttp {
 
+namespace beast = boost::beast;
+namespace http = boost::beast::http;
+namespace net = boost::asio;
+namespace tcp = boost::asio::ip::tcp;
+
 template<typename ReqBody, typename RespBody>
 class Session : public std::enable_shared_from_this<Session<ReqBody, RespBody>> {
-    using beast = boost::beast;
-    using http = boost::beast::http;
-    using net = boost::asio;
-    using tcp = boost::asio::ip::tcp;
-
     using ReqPtr = std::shared_ptr<Request<ReqBody>>;
     using RespPtr = std::shared_ptr<Response<RespBody>>;
 
