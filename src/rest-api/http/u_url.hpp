@@ -7,10 +7,11 @@
 
 namespace uhttp {
 
+namespace http = boost::beast::http;
+    
 template<typename Request>
 class Url {
     using base64_url = cppcodec::base64_url;
-    using http = boost::beast::http;
 
 public:
     Url(Request& req) : request{req} {}
