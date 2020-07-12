@@ -7,10 +7,10 @@ namespace http {
 
 class TimeOut {
 public:
-    TimeOut(std::chrono::microseconds&& ms) : mircoSecond(ms) {}
+    TimeOut(std::chrono::milliseconds&& ms) : milliSecond(ms) {}
 
 private:
-    std::chrono::microseconds mircoSecond;
+    std::chrono::milliseconds milliSecond;
 };
 
 }

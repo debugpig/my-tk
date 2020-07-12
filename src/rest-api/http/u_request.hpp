@@ -4,7 +4,6 @@
 #include <boost/beast/http.hpp>
 
 #include "u_url.hpp"
-#include "u_header.hpp"
 
 namespace uhttp {
 
@@ -13,35 +12,45 @@ namespace http = boost::beast::http;
 template<typename Body>
 class Request {
 public:
-    Request() = default;
+    Request() {};
 
-    std::string Host() {
-        return url.GetHost();
+    template<typename Option, typename ...Options>
+    void SetOption(Option& option, Options&... options) {
+        option.SetOption(_request);
+        SetOption(options...);
     }
 
-    size_t Port() {
-        return url.GetPort();
+    template<typename Option>
+    void SetOption(Option& option) {
+        option.SetOption(_request);
     }
 
-    Header<http::request<Body>>& Header() {
-        return header;
+    Request& SetUrl(Url<http::request<Body>>&& urlOpt) {
+        _url = urlOpt;
+        _url.SetOption(_request);
+        return *this;
     }
 
-    Url<http::request<Body>>& Url() {
-        return url;
+    const std::string& Host() {
+        return _url.GetHost();
+    }
+
+    const std::string& Port() {
+        return _url.GetPort();
     }
 
     http::request<Body>& Native() {
-        return request;
+        return _request;
     }
 
 private:
-    http::request<Body> request;
-    Header<http::request<Body>> header{request};
-    Url<http::request<Body>> url{request};
+    http::request<Body> _request;
+    Url<http::request<Body>> _url;
 };
 
+using GetBody = http::empty_body;
 using GetRequest = Request<http::empty_body>;
+using GetRequestNavive = http::request<http::empty_body>;
 
 }
 

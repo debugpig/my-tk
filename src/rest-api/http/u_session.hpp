@@ -19,27 +19,27 @@ namespace uhttp {
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
 namespace net = boost::asio;
-namespace tcp = boost::asio::ip::tcp;
 
 template<typename ReqBody, typename RespBody>
 class Session : public std::enable_shared_from_this<Session<ReqBody, RespBody>> {
     using ReqPtr = std::shared_ptr<Request<ReqBody>>;
     using RespPtr = std::shared_ptr<Response<RespBody>>;
+    using tcp = boost::asio::ip::tcp;
 
 public:
     Session(net::io_context& io) 
         : resolver(net::make_strand(io))
         , stream(net::make_strand(io))
-        , mircoSecond(10000) {
+        , milliSecond(10000) {
     }
 
-    void SetTimeOut(std::chrono::microseconds& sec) {
-        mircoSecond = sec;
+    void SetTimeOut(std::chrono::milliseconds& sec) {
+        milliSecond = sec;
     }
 
     void SetContext(ReqPtr req, RespPtr rsp, 
         std::function<void(RespPtr)>&& responseFn,
-        std::function<void(int, std::string)&& errorFn) {
+        std::function<void(int, std::string)>&& errorFn) {
         request = req;
         response = rsp;
         responseCallback = responseFn;
@@ -47,8 +47,9 @@ public:
     }
 
     void Run() {
-        resolver.async_resolve(request->Host(), request->Port(), 
-            beast::bind_front_handler(&Session::OnResolve, shared_from_this()));
+        tcp::resolver::query query(request->Host(), request->Port());
+        resolver.async_resolve(query, 
+            beast::bind_front_handler(&Session::OnResolve, this->shared_from_this()));
     }
 
     void OnResolve(beast::error_code ec, tcp::resolver::results_type results) {
@@ -57,21 +58,21 @@ public:
             return;
         }
 
-        stream.expires_after(mircoSecond);
+        stream.expires_after(milliSecond);
         stream.async_connect(results, beast::bind_front_handler(
-            &Session::OnConnect, shared_from_this())
+            &Session::OnConnect, this->shared_from_this())
         );
     }
 
-    void OnConnect(beast::error_code ec, tcp::resolver::results_type::endpointType) {
+    void OnConnect(beast::error_code ec, tcp::resolver::results_type::endpoint_type) {
         if (ec.failed()) {
             errorCallback(ec.value(), ec.message());
             return;
         }
 
-        stream.expires_after(mircoSecond);
+        stream.expires_after(milliSecond);
         http::async_write(stream, request->Native(), beast::bind_front_handler(
-            &Session::OnWrite, shared_from_this()));
+            &Session::OnWrite, this->shared_from_this()));
     }
 
     void OnWrite(beast::error_code ec, size_t) {
@@ -81,7 +82,7 @@ public:
         }
         
         http::async_read(stream, buffer, response->Native(), beast::bind_front_handler(
-                &Session::OnRead, shared_from_this()));
+                &Session::OnRead, this->shared_from_this()));
     }
 
     void OnRead(beast::error_code ec, size_t) {
@@ -108,7 +109,7 @@ private:
     beast::tcp_stream stream;
     beast::flat_buffer buffer;
 
-    std::chrono::microseconds mircoSecond;
+    std::chrono::milliseconds milliSecond;
 };
 
 }

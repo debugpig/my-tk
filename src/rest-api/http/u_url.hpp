@@ -14,45 +14,42 @@ class Url {
     using base64_url = cppcodec::base64_url;
 
 public:
-    Url(Request& req) : request{req} {}
-
-    Url& SetHost(std::string& host, size_t port = 80) {
-        request.set(http::field::host, host);
-        this->host = host;
-        this->port = port;
+    Url() = default;
+    Url& SetHost(std::string& host, std::string port = "80") {
+        _host = host;
+        _port = port;
         return *this;
     }
 
     Url& SetPath(std::string& path) {
-        this->path = path;
+        _path = path;
         return *this;
     }
 
     Url& AddParam(std::string& key, std::string& value) {
-        parameter.push_back(parameter.empty() ? '?' : '&');
-        parameter.append(base64_url::encode(key)).append("=").append(base64_url::encode(value));
+        _parameter.push_back(_parameter.empty() ? '?' : '&');
+        _parameter.append(base64_url::encode(key)).append("=").append(base64_url::encode(value));
         return *this;
     }
 
-    Url& SetTarget() {
-        request.target(path + parameter);
-        return *this;
+    void SetOption(Request& req) {
+        req.set(http::field::host, _host);
+        req.target(_path + _parameter);
     }
 
-    std::string GetHost() {
-        return host;
+    const std::string& GetHost() {
+        return _host;
     }
 
-    size_t GetPort() {
-        return port;
+    const std::string& GetPort() {
+        return _port;
     }
 
 private:
-    Request& request;
-    std::string host;
-    size_t port;
-    std::string path;
-    std::string parameter;
+    std::string _host;
+    std::string _port;
+    std::string _path;
+    std::string _parameter;
 };
 
 }

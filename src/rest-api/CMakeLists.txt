@@ -20,4 +20,5 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 #target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} 
     Boost::program_options
-    Boost::filesystem)
+    Boost::filesystem
+    pthread)
