@@ -20,7 +20,7 @@ namespace fs = boost::filesystem;
 
 int main(int argc, char** argv) {
     string host = "gitee.com";
-    string path = "api/v5/gists";
+    string path = "/api/v5/gists";
     string tokenParaKey = "access_token";
     string tokenParaValue = "2fe7e25ca43c607d127c8a3d650f72e7";
     uhttp::Url<uhttp::GetRequestNavive> url;
@@ -31,12 +31,14 @@ int main(int argc, char** argv) {
     uhttp::MethodOption<uhttp::GetRequestNavive> method(uhttp::Method::GET);
     request->SetUrl(std::move(url)).SetOption(version, method);
 
+    cout << request->Native() << endl;
+
     shared_ptr<uhttp::JsonResponse> response = make_shared<uhttp::JsonResponse>();
 
     net::io_context io;
     shared_ptr<uhttp::Session<http::empty_body, http::string_body>> session = make_shared<uhttp::Session<http::empty_body, http::string_body>>(io);
     session->SetContext(request, response, [](shared_ptr<uhttp::JsonResponse> response) {
-        //cout << *response << endl;
+        cout << response->Native() << endl;
         cout << "get response" << endl;
     }, [] (int code, string errMsg) {
         cout << "error: " << code << ", reson: " << errMsg << endl;

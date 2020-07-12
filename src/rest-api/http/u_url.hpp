@@ -22,13 +22,17 @@ public:
     }
 
     Url& SetPath(std::string& path) {
-        _path = path;
+        if (path.empty() || path[0] != '/') {
+            _path.push_back('/');
+        }
+        _path.append(path);
         return *this;
     }
 
     Url& AddParam(std::string& key, std::string& value) {
         _parameter.push_back(_parameter.empty() ? '?' : '&');
-        _parameter.append(base64_url::encode(key)).append("=").append(base64_url::encode(value));
+        _parameter.append(key).append("=").append(value);
+        //_parameter.append(base64_url::encode(key)).append("=").append(base64_url::encode(value));
         return *this;
     }
 
